@@ -1,0 +1,1 @@
+- [x] Remove signing_out logic in social sign-up useEffect in src/signuppage.tsx
