@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import LandingPage from "./landingpage";
 import SignUpPage from "./signuppage";
 import SignInPage from "./signinpage";
@@ -7,8 +6,9 @@ import ForgotPasswordPage from "./ForgotPasswordPage";
 import UpdatePasswordPage from "./UpdatePasswordPage";
 import PaymentPage from "./paymentpage";
 import UserDashboard from "./userdashboard";
+import AdminDashboard from "./admindashboard";
+import StaffDashboard from "./staffdashboard";
 import ProtectedRoute from "./ProtectedRoute";
-import { supabase } from "./supabaseClient";
 import Root from "./Root";
 
 /**
@@ -30,6 +30,8 @@ function AppRoutes() {
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<UserDashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/staff" element={<StaffDashboard />} />
         <Route path="/payment" element={<PaymentPage />} />
       </Route>
 
@@ -47,9 +49,5 @@ function AppRoutes() {
 }
 
 export default function App() {
-  return (
-    <Router>
-      <AppRoutes />
-    </Router>
-  );
+  return <AppRoutes />;
 }

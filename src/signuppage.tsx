@@ -150,17 +150,37 @@ export default function SignUpPage() {
         overflow: "hidden",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: "url('/logo/userdashboard.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.3,
+          filter: "blur(8px)",
+          zIndex: 0,
+        }}
+      ></div>
       <div className="background-text-container">
         <span className="background-text-left">GN</span>
         <span className="background-text-right">RS</span>
       </div>
       <div className="container">
         <div className="row justify-content-center">
-          <div className="col-lg-7 col-xl-6">
+          <div className="col-lg-6">
             <div
               className="card shadow-lg border-0"
               id="signup-form-card"
-              style={{ borderRadius: "1rem" }}
+              style={{
+                borderRadius: "1rem",
+                background: "rgba(255, 255, 255, 0.1)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+              }}
             >
               <div className="card-body p-4 p-sm-5">
                 <div className="text-center mb-4">
@@ -184,7 +204,15 @@ export default function SignUpPage() {
                 </div>
 
                 <form onSubmit={handleSignUp} noValidate>
-                  <div className="form-floating mb-3">
+                  <div
+                    className="form-floating mb-3"
+                    style={{
+                      background: "rgba(255, 255, 255, 0.1)",
+                      backdropFilter: "blur(5px)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      borderRadius: "0.375rem",
+                    }}
+                  >
                     <input
                       type="text"
                       className="form-control"
@@ -194,10 +222,19 @@ export default function SignUpPage() {
                       value={fullName}
                       onChange={handleFullNameChange}
                       required
+                      style={{ background: "transparent" }}
                     />
                     <label htmlFor="fullName">Full Name</label>
                   </div>
-                  <div className="form-floating mb-3">
+                  <div
+                    className="form-floating mb-3"
+                    style={{
+                      background: "rgba(255, 255, 255, 0.1)",
+                      backdropFilter: "blur(5px)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      borderRadius: "0.375rem",
+                    }}
+                  >
                     <input
                       type="tel"
                       className="form-control"
@@ -207,10 +244,19 @@ export default function SignUpPage() {
                       value={phone}
                       onChange={handlePhoneChange}
                       required
+                      style={{ background: "transparent" }}
                     />
                     <label htmlFor="phone">Phone Number</label>
                   </div>
-                  <div className="form-floating mb-3">
+                  <div
+                    className="form-floating mb-3"
+                    style={{
+                      background: "rgba(255, 255, 255, 0.1)",
+                      backdropFilter: "blur(5px)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      borderRadius: "0.375rem",
+                    }}
+                  >
                     <input
                       type="email"
                       className="form-control"
@@ -220,12 +266,21 @@ export default function SignUpPage() {
                       value={email}
                       onChange={handleEmailChange}
                       required
+                      style={{ background: "transparent" }}
                     />
                     <label htmlFor="email">Email Address</label>
                   </div>
                   <div className="row g-3 mb-3">
                     <div className="col-md-6">
-                      <div className="form-floating position-relative">
+                      <div
+                        className="form-floating position-relative"
+                        style={{
+                          background: "rgba(255, 255, 255, 0.1)",
+                          backdropFilter: "blur(5px)",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                          borderRadius: "0.375rem",
+                        }}
+                      >
                         <input
                           type={showPassword ? "text" : "password"}
                           className="form-control"
@@ -235,6 +290,7 @@ export default function SignUpPage() {
                           value={password}
                           onChange={handlePasswordChange}
                           required
+                          style={{ background: "transparent" }}
                         />
                         <label htmlFor="password">Password</label>
                         <span
@@ -250,10 +306,7 @@ export default function SignUpPage() {
                           ></i>
                         </span>
                       </div>
-                      <div
-                        className="password-strength-meter mt-2"
-                        style={{ maxWidth: "100%" }}
-                      >
+                      <div className="password-strength-meter mt-2" style={{ maxWidth: "100%" }}>
                         <div
                           className="strength-bar"
                           style={{
@@ -288,7 +341,15 @@ export default function SignUpPage() {
                       </div>
                     </div>
                     <div className="col-md-6">
-                      <div className="form-floating position-relative">
+                      <div
+                        className="form-floating position-relative"
+                        style={{
+                          background: "rgba(255, 255, 255, 0.1)",
+                          backdropFilter: "blur(5px)",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                          borderRadius: "0.375rem",
+                        }}
+                      >
                         <input
                           type={showConfirmPassword ? "text" : "password"}
                           className="form-control"
@@ -298,6 +359,7 @@ export default function SignUpPage() {
                           value={confirmPassword}
                           onChange={handleConfirmPasswordChange}
                           required
+                          style={{ background: "transparent" }}
                         />
                         <label htmlFor="confirmPassword">
                           Confirm Password

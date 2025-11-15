@@ -1,9 +1,9 @@
-import React from "react";
 import { useAuth } from "./AuthContext";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 export default function Root() {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -23,10 +23,11 @@ export default function Root() {
 
   // If the auth state is loaded and there is a user, redirect to the dashboard.
   // This prevents the landing page from ever showing for a logged-in user.
-  if (user) {
+  // However, allow access to /update-password even if authenticated, as password recovery requires it.
+  if (user && location.pathname !== "/update-password") {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // If no user, render the public routes (landing, sign-in, etc.)
+  // If no user, or if on /update-password, render the public routes (landing, sign-in, etc.)
   return <Outlet />;
 }

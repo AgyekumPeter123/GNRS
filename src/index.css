@@ -1,9 +1,42 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap");
-@import "bootstrap-icons/font/bootstrap-icons.css";
-
-body {
-  font-family: "Poppins", sans-serif;
+/* Animated Signin Card Border */
+.animated-signin-card {
+  position: relative;
+  overflow: hidden;
 }
+
+.animated-border-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.animated-line-1 {
+  animation: dash-move 4s linear infinite;
+}
+
+.animated-line-2 {
+  animation: dash-move 4s linear infinite 2s; /* Delay to follow the first line */
+}
+
+@keyframes dash-move {
+  0% {
+    stroke-dashoffset: 60; /* Total dash + gap */
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.back-to-top-btn {
+  bottom: 110px;
+}
+
+
+
 
 .background-text-container {
   position: absolute;
@@ -78,8 +111,10 @@ body {
   position: relative;
   overflow: hidden;
   border-radius: 14px;
-  background: linear-gradient(180deg, #ffffff, #f8f9fa);
-  border: 1px solid #e9ecef;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 6px 18px rgba(12, 60, 96, 0.08);
   transition: transform 250ms cubic-bezier(0.2, 0.9, 0.2, 1), box-shadow 250ms ease, background 250ms ease;
   will-change: transform;
@@ -246,6 +281,7 @@ body {
   width: 70%; /* Or 100% if you prefer it to span the full width */
 }
 
+
 /* Adjust navbar hover effect for collapsed (mobile) menu */
 @media (max-width: 991.98px) {
   .navbar-nav {
@@ -260,6 +296,9 @@ body {
   .nav-link-hover:hover::after {
     width: 100%; /* Full width of the link text */
   }
+
+  
+ 
 }
 
 /* Custom Hamburger Toggler Animation */
@@ -451,8 +490,7 @@ footer .social-icon:hover::before {
   transition: color 0.3s ease; /* Only transition the color */
 }
 
-.password-requirements li.valid .bi {
-}
+
 
 /* --- Modernized Submit Button --- */
 .btn-submit-modern {
@@ -466,15 +504,18 @@ footer .social-icon:hover::before {
 /* --- Modernized Social Sign-in Buttons --- */
 .btn-social {
   transition: all 0.2s ease-in-out;
-  background-color: #f8f9fa; /* Bootstrap's btn-light color */
-  border-color: #dee2e6;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #0C3C60; /* Adjust text color for better contrast */
 }
 
 .btn-social:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  background-color: #fff;
-  border-color: #ced4da;
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .btn-social .bi-google {
@@ -531,9 +572,7 @@ footer .social-icon:hover::before {
 }
 
 /* Shake animation for error messages */
-.shake-animation {
-  /* The shake is now combined into fadeInAndShake */
-}
+
 
 @keyframes shake {
   10%, 90% { transform: translate3d(-1px, 0, 0); }
@@ -605,6 +644,7 @@ footer .social-icon:hover::before {
   visibility: visible;
   transform: translateY(0);
 }
+
 
 /* Update footer links container */
 .footer-links {
@@ -883,13 +923,12 @@ footer ul li:nth-child(even) .footer-glass-link {
   --glass-width: 260px;
   --sidebar-collapsed-width: 80px;
   --accent-color: #D4AF37; /* Gold for active item */
-  --ios-glass-light: rgba(255, 255, 255, 0.25);
   --ios-glass-dark: rgba(12, 60, 96, 0.4);
 }
 
 /* ✨ iOS-like glass blur */
 .sidebar {
-  width: var(--sidebar-collapsed-width);
+  width: var(--glass-width);
   background: linear-gradient(
     160deg,
     var(--ios-glass-dark),
@@ -898,8 +937,7 @@ footer ul li:nth-child(even) .footer-glass-link {
   backdrop-filter: saturate(180%) blur(24px);
   -webkit-backdrop-filter: saturate(180%) blur(24px);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1),
-    0 8px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -910,32 +948,6 @@ footer ul li:nth-child(even) .footer-glass-link {
   z-index: 100;
   overflow: hidden;
   transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Massive background animation pseudo-element
-.sidebar::before {
-  content: "";
-  position: absolute;
-  top: 70%;
-  left: -50%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
-  border-radius: 50%;
-  transform: scale(0) rotate(0deg);
-  opacity: 0;
-  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease;
-  z-index: 0;
-} */
-
-.sidebar:hover::before {
-  transform: scale(1.5) rotate(180deg);
-  opacity: 1;
-}
-
-/* Expand on hover */
-.sidebar:hover {
-  width: var(--glass-width);
 }
 
 /* Inner spacing */
@@ -959,27 +971,20 @@ footer ul li:nth-child(even) .footer-glass-link {
 }
 
 .logo img {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: 10px;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
 
 .logo span {
-  font-weight: 700;
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
-  opacity: 0;
-  width: 0;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-}
-
-.sidebar:hover .logo span {
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px; /* Keep other styles */
   opacity: 1;
   width: auto;
+  white-space: nowrap;
 }
 
 /* Navigation Items */
@@ -1004,22 +1009,6 @@ footer ul li:nth-child(even) .footer-glass-link {
   transition: all 0.25s ease;
 }
 
-/* Collapsed mode hover: circular background on icon */
-.sidebar:not(:hover) .nav-item:hover,
-.sidebar:not(:hover) .sidebar-footer .nav-item:hover {
-  background: transparent; /* Remove the full background on hover */
-  border-color: transparent;
-  box-shadow: none;
-}
-
-.sidebar:not(:hover) .nav-item:hover .icon,
-.sidebar:not(:hover) .sidebar-footer .nav-item:hover .icon {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 50%;
-  transform: scale(1.2);
-  transition: transform 0.2s ease, background-color 0.2s ease;
-}
-
 .nav-item:hover {
   background: rgba(255, 255, 255, 0.18);
   border-color: rgba(255, 255, 255, 0.25);
@@ -1042,15 +1031,9 @@ footer ul li:nth-child(even) .footer-glass-link {
 
 /* Hide labels when collapsed */
 .nav-item .label {
-  opacity: 0;
-  width: 0;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.sidebar:hover .label {
   opacity: 1;
   width: auto;
+  transition: all 0.3s ease;
 }
 
 /* Notification badge */
@@ -1063,12 +1046,8 @@ footer ul li:nth-child(even) .footer-glass-link {
   padding: 0.25rem 0.5rem;
   font-weight: 600;
   transition: all 0.3s ease-in-out;
-  opacity: 0; /* Hidden by default */
-}
-
-/* Show badge only when sidebar is expanded */
-.sidebar:hover .nav-item .badge {
   opacity: 1;
+  width: auto;
 }
 
 /* Optional: add a pulse animation for new notifications */
@@ -1094,7 +1073,7 @@ footer ul li:nth-child(even) .footer-glass-link {
 }
 
 .sidebar-footer .nav-item {
-  color: #f28b82; /* A softer, more modern red */
+  color: #dc3545; /* A more visible, standard red */
 }
 
 .sidebar-footer .nav-item:hover {
@@ -1104,22 +1083,25 @@ footer ul li:nth-child(even) .footer-glass-link {
   box-shadow: 0 4px 12px rgba(234, 67, 53, 0.2);
 }
 
+/* Dashboard layout */
+.dashboard-layout {
+  height: 100vh;
+  display: flex;
+}
+
 /* Main content */
 .main-content {
   flex-grow: 1;
-  margin-left: var(--sidebar-collapsed-width);
+  margin-left: var(--glass-width);
   transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  background-color: #f4f7fc;
-}
-
-.sidebar:hover + .main-content {
-  margin-left: var(--glass-width);
+  background-color: transparent;
+  height: 100%;
 }
 
 @media (max-width: 900px) {
   .sidebar {
-    /* On smaller screens, the sidebar is always collapsed */
+    /* On smaller screens, the sidebar is collapsed */
     width: var(--sidebar-collapsed-width);
   }
   .sidebar:hover {
@@ -1127,18 +1109,24 @@ footer ul li:nth-child(even) .footer-glass-link {
     width: var(--sidebar-collapsed-width);
   }
   .main-content,
-  .sidebar:hover + .main-content {
+  .sidebar + .main-content {
     /* Adjust main content margin to account for the collapsed sidebar */
     margin-left: var(--sidebar-collapsed-width);
   }
-  .sidebar:hover .label,
-  .sidebar:hover .logo span {
+  .sidebar .label,
+  .sidebar .logo span {
     /* Keep labels and logo text hidden on hover in mobile view */
     opacity: 0;
     width: 0;
   }
 
-  /* On mobile, the hover effect should match the active state's shape */
+  .logo {
+    /* Center the logo icon in mobile view */
+    justify-content: center;
+    padding-left: 1.7rem;
+    
+  }
+
   .nav-item:hover {
     background: rgba(255, 255, 255, 0.18);
     border-color: rgba(255, 255, 255, 0.25);
@@ -1154,4 +1142,10 @@ footer ul li:nth-child(even) .footer-glass-link {
     justify-content: center;
     gap: 0;
   }
+
+  .back-to-top-btn {
+    bottom: 110px;
+  }
+
+  
 }

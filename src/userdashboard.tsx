@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
@@ -38,11 +38,7 @@ export default function UserDashboard() {
       <aside className="sidebar">
         <div className="sidebar-inner">
           <div className="logo">
-            <img
-              src="/logo/GNRSlogo.png"
-              alt="GNRS Logo"
-              style={{ width: "32px", height: "32px" }}
-            />
+            <img src="/logo/GNRSlogo.png" alt="GNRS Logo" />
             <span>GNRS</span>
           </div>
 
@@ -108,6 +104,23 @@ export default function UserDashboard() {
 
       {/* Main Content */}
       <main className="main-content" style={{ position: "relative" }}>
+        {/* Blurred Background */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundImage: `url('/logo/user.jpg')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            filter: "blur(8px)",
+            zIndex: 0,
+            opacity: 0.3,
+          }}
+        />
         <div
           style={{
             position: "absolute",
@@ -115,7 +128,6 @@ export default function UserDashboard() {
             left: "50%",
             transform: "translate(-50%, -50%)",
             zIndex: 0,
-            // opacity: 0.05,
             opacity: 0.1,
             pointerEvents: "none",
           }}
@@ -123,7 +135,6 @@ export default function UserDashboard() {
           <img
             src="/logo/GNRSlogo.png"
             alt="Watermark"
-            //style={{ width: "100%", maxWidth: "400px" }}
             style={{ width: "100%", maxWidth: "600px" }}
           />
         </div>
@@ -136,7 +147,6 @@ export default function UserDashboard() {
               <h1 className="mb-0 h4 fw-bold">
                 Welcome, {user?.user_metadata.full_name || "User"}
               </h1>
-              <span className="ms-2 fs-4">👋</span>
             </div>
           </section>
         </header>
@@ -157,7 +167,15 @@ export default function UserDashboard() {
             <div className="row g-4 dashboard-cards-grid">
               {/* Personalized Feed */}
               <div className="col-lg-8" style={{ animationDelay: "0.1s" }}>
-                <div className="card h-100 shadow-sm feature-card">
+                <div
+                  className="card h-100 shadow-sm feature-card"
+                  style={{
+                    background: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(5px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "0.5rem",
+                  }}
+                >
                   <div className="card-body p-4 text-dark">
                     <h4 className="card-title fw-bold mb-3 text-dark">
                       <i className="bi bi-person-circle me-2"></i>Personalized
@@ -180,7 +198,15 @@ export default function UserDashboard() {
 
               {/* Opportunities */}
               <div className="col-lg-4" style={{ animationDelay: "0.2s" }}>
-                <div className="card h-100 shadow-sm feature-card">
+                <div
+                  className="card h-100 shadow-sm feature-card"
+                  style={{
+                    background: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(5px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "0.5rem",
+                  }}
+                >
                   <div className="card-body p-4 text-dark">
                     <h4 className="card-title fw-bold mb-3 text-dark">
                       <i className="bi bi-briefcase-fill me-2"></i>Opportunities
@@ -208,7 +234,15 @@ export default function UserDashboard() {
 
               {/* Professional Features */}
               <div className="col-md-6" style={{ animationDelay: "0.3s" }}>
-                <div className="card shadow-sm feature-card">
+                <div
+                  className="card shadow-sm feature-card"
+                  style={{
+                    background: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(5px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "0.5rem",
+                  }}
+                >
                   <div className="card-body p-4 text-dark">
                     <h4 className="card-title fw-bold mb-3 text-dark">
                       <i className="bi bi-graph-up-arrow me-2"></i>Professional
@@ -236,7 +270,13 @@ export default function UserDashboard() {
               <div className="col-md-6">
                 <div
                   className="card shadow-sm feature-card"
-                  style={{ animationDelay: "0.4s" }}
+                  style={{
+                    animationDelay: "0.4s",
+                    background: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(5px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "0.5rem",
+                  }}
                 >
                   <div className="card-body p-4 text-dark">
                     <h4 className="card-title fw-bold mb-3 text-dark">

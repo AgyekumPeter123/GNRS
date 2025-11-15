@@ -35,6 +35,7 @@ export default function PaymentPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState(plans.monthly);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState("");
 
   // This function is called when the "Pay Now" button is clicked
@@ -45,8 +46,27 @@ export default function PaymentPage() {
     console.log("Attempted to pay for:", selectedPlan.name);
   };
 
-  const handleSkipForNow = () => {
-    navigate("/");
+  const handleSkipForNow = async () => {
+    if (!user || isUpdating) return;
+
+    setIsUpdating(true);
+    setError("");
+
+    // Set has_onboarded to true so the user sees the dashboard next time.
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ has_onboarded: true })
+      .eq("id", user.id);
+
+    if (updateError) {
+      setError(
+        "Could not update your profile. Please try again or contact support."
+      );
+      console.error("Onboarding update error:", updateError);
+      setIsUpdating(false);
+    } else {
+      navigate("/dashboard", { replace: true });
+    }
   };
 
   // Effect to automatically clear the error message after 5 seconds
@@ -68,11 +88,35 @@ export default function PaymentPage() {
       style={{
         minHeight: "100vh",
         background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
       <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: "url('/logo/userdashboard.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.3,
+          filter: "blur(8px)",
+          zIndex: 0,
+        }}
+      ></div>
+      <div
         className="card shadow-lg border-0 p-4 p-sm-5 bg-white"
-        style={{ width: "90%", maxWidth: "800px", borderRadius: "1rem" }}
+        style={{
+          width: "90%",
+          maxWidth: "800px",
+          borderRadius: "1rem",
+          background: "rgba(255, 255, 255, 0.1)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+        }}
       >
         <div className="text-center mb-4">
           <h2 className="fw-bolder text-dark mb-2">Choose Your Plan</h2>
@@ -93,7 +137,17 @@ export default function PaymentPage() {
                     : "border-light"
                 }`}
                 onClick={() => setSelectedPlan(plan)}
-                style={{ cursor: "pointer", transition: "all 0.2s ease" }}
+                style={{
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  background: "rgba(255, 255, 255, 0.1)",
+                  backdropFilter: "blur(5px)",
+                  border:
+                    selectedPlan.id === plan.id
+                      ? "2px solid #0C3C60"
+                      : "1px solid rgba(255, 255, 255, 0.2)",
+                  borderRadius: "0.5rem",
+                }}
               >
                 <div className="card-body p-4">
                   <h4 className="card-title fw-bold">{plan.name}</h4>
@@ -120,16 +174,29 @@ export default function PaymentPage() {
         <div className="d-grid gap-3 mt-4">
           <button
             onClick={handlePayNow}
-            className="btn btn-primary btn-lg w-100 py-3 fw-semibold"
+            className="btn btn-primary btn-lg w-100 py-3 fw-semibold d-flex align-items-center justify-content-center"
             style={{ backgroundColor: "#0C3C60", borderColor: "#0C3C60" }}
+            disabled={isUpdating}
           >
             Pay GHS {selectedPlan.price} Now
           </button>
           <button
             onClick={handleSkipForNow}
-            className="btn btn-outline-secondary w-100"
+            className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center"
+            disabled={isUpdating}
           >
-            Skip For Now
+            {isUpdating ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Saving...
+              </>
+            ) : (
+              "Skip For Now"
+            )}
           </button>
         </div>
       </div>
