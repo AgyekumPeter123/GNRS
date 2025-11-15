@@ -157,7 +157,7 @@ export default function SignUpPage() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundImage: "url('/logo/userdashboard.jpg')",
+          backgroundImage: "url('/logo/user.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           opacity: 0.3,
@@ -306,7 +306,10 @@ export default function SignUpPage() {
                           ></i>
                         </span>
                       </div>
-                      <div className="password-strength-meter mt-2" style={{ maxWidth: "100%" }}>
+                      <div
+                        className="password-strength-meter mt-2"
+                        style={{ maxWidth: "100%" }}
+                      >
                         <div
                           className="strength-bar"
                           style={{
