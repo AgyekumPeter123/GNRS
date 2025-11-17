@@ -8,6 +8,19 @@ interface Notification {
   type: string;
   message: string;
   time: string;
+  created_at?: string;
+  purpose?: string;
+}
+
+interface ContentItem {
+  id: number;
+  type: string;
+  title: string;
+  description?: string;
+  image_url?: string;
+  submitted_by: string;
+  created_at: string;
+  status: string;
 }
 
 export default function StaffDashboard() {
@@ -16,6 +29,36 @@ export default function StaffDashboard() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Job posting modal states
+  const [showJobModal, setShowJobModal] = useState(false);
+  const [jobFormData, setJobFormData] = useState({
+    title: "",
+    description: "",
+    company: "",
+    location: "",
+    salary: "",
+    requirements: "",
+    employmentType: "",
+    experienceLevel: "",
+    applicationDeadline: "",
+    image: null as File | null,
+  });
+  const [jobFormLoading, setJobFormLoading] = useState(false);
+  const [jobFormError, setJobFormError] = useState("");
+
+  // User content states
+  const [userContent, setUserContent] = useState<ContentItem[]>([]);
+  const [contentLoading, setContentLoading] = useState(false);
+
+  // Notification dialog states
+  const [selectedNotification, setSelectedNotification] =
+    useState<Notification | null>(null);
+  const [showNotificationDialog, setShowNotificationDialog] = useState(false);
+
+  // Snackbar state
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [showSnackbar, setShowSnackbar] = useState(false);
 
   // Real data from Supabase
   const [stats, setStats] = useState({
@@ -220,6 +263,212 @@ export default function StaffDashboard() {
     }
   };
 
+  // Fetch user content for content tab
+  const fetchUserContent = async () => {
+    if (!user) return;
+
+    setContentLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("content")
+        .select("*")
+        .eq("submitted_by", user.id)
+        .in("status", ["pending", "approved"])
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      setUserContent(data || []);
+    } catch (error) {
+      console.error("Error fetching user content:", error);
+      setJobFormError("Failed to load content. Please try again.");
+    } finally {
+      setContentLoading(false);
+    }
+  };
+
+  // Handle job posting modal open
+  const handleOpenJobModal = () => {
+    setShowJobModal(true);
+    setJobFormData({
+      title: "",
+      description: "",
+      company: "",
+      location: "",
+      salary: "",
+      requirements: "",
+      employmentType: "",
+      experienceLevel: "",
+      applicationDeadline: "",
+      image: null,
+    });
+    setJobFormError("");
+  };
+
+  // Handle job form submission
+  const handleJobSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
+    setJobFormLoading(true);
+    setJobFormError("");
+
+    try {
+      // Validate required fields
+      if (
+        !jobFormData.title ||
+        !jobFormData.description ||
+        !jobFormData.company ||
+        !jobFormData.location
+      ) {
+        throw new Error("Please fill in all required fields");
+      }
+
+      let imageUrl = null;
+
+      // Upload image if provided
+      if (jobFormData.image) {
+        try {
+          const fileExt = jobFormData.image.name.split(".").pop();
+          const fileName = `${user.id}_${Date.now()}.${fileExt}`;
+          const filePath = `content/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from("content-images")
+            .upload(filePath, jobFormData.image);
+
+          if (uploadError) {
+            console.warn(
+              "Image upload failed, proceeding without image:",
+              uploadError
+            );
+          } else {
+            const {
+              data: { publicUrl },
+            } = supabase.storage.from("content-images").getPublicUrl(filePath);
+
+            imageUrl = publicUrl;
+          }
+        } catch (error) {
+          console.warn("Image upload failed, proceeding without image:", error);
+        }
+      }
+
+      // Insert content into database
+      const { data: contentData, error: contentError } = await supabase
+        .from("content")
+        .insert({
+          type: "job",
+          title: jobFormData.title,
+          description: jobFormData.description,
+          company: jobFormData.company,
+          location: jobFormData.location,
+          salary: jobFormData.salary,
+          requirements: jobFormData.requirements,
+          image_url: imageUrl,
+          submitted_by: user.id,
+          status: "pending",
+        })
+        .select()
+        .single();
+
+      if (contentError) throw contentError;
+
+      // Create notification
+      const { error: notificationError } = await supabase
+        .from("notifications")
+        .insert({
+          user_id: user.id,
+          type: "content",
+          message: `Your job posting "${jobFormData.title}" has been submitted for approval.`,
+          purpose: "Job posting submitted successfully",
+        });
+
+      if (notificationError) throw notificationError;
+
+      // Update notifications state
+      const newNotification = {
+        id: Date.now().toString(),
+        type: "content",
+        message: `Your job posting "${jobFormData.title}" has been submitted for approval.`,
+        time: new Date().toLocaleString(),
+        created_at: new Date().toISOString(),
+        purpose: "Job posting submitted successfully",
+      };
+
+      setNotifications((prev) => [newNotification, ...prev]);
+
+      // Update stats
+      setStats((prev) => ({
+        ...prev,
+        contentCreated: prev.contentCreated + 1,
+      }));
+
+      // Show success message
+      setSnackbarMessage("Job posting submitted successfully!");
+      setShowSnackbar(true);
+
+      // Close modal and refresh content
+      setShowJobModal(false);
+      fetchUserContent();
+      fetchDashboardData();
+    } catch (error: any) {
+      console.error("Error submitting job posting:", error);
+      setJobFormError(
+        error.message || "Failed to submit job posting. Please try again."
+      );
+    } finally {
+      setJobFormLoading(false);
+    }
+  };
+
+  // Handle notification click
+  const handleNotificationClick = (notification: Notification) => {
+    setSelectedNotification(notification);
+    setShowNotificationDialog(true);
+  };
+
+  // Handle snackbar close
+  const handleSnackbarClose = () => {
+    setShowSnackbar(false);
+  };
+
+  const handleJobFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setJobFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setJobFormData((prev) => ({ ...prev, image: file }));
+  };
+
+  const handleCloseJobModal = () => {
+    setShowJobModal(false);
+    setJobFormData({
+      title: "",
+      description: "",
+      company: "",
+      location: "",
+      salary: "",
+      requirements: "",
+      employmentType: "",
+      experienceLevel: "",
+      applicationDeadline: "",
+      image: null,
+    });
+    setJobFormError("");
+  };
+
+  // Fetch user content when content tab is active
+  useEffect(() => {
+    if (activeTab === "content" && user) {
+      fetchUserContent();
+    }
+  }, [activeTab, user]);
+
   return (
     <div className="dashboard-layout" style={{ minHeight: "100vh" }}>
       {/* Sidebar */}
@@ -394,7 +643,10 @@ export default function StaffDashboard() {
                 Welcome, Staff {user?.user_metadata.full_name || "Staff Member"}
               </h1>
               <div className="d-flex gap-2">
-                <button className="btn btn-outline-primary btn-sm">
+                <button
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={handleOpenJobModal}
+                >
                   <i className="bi bi-plus-circle me-1"></i>Add Job Posting
                 </button>
                 <button className="btn btn-outline-success btn-sm">
@@ -736,7 +988,10 @@ export default function StaffDashboard() {
                                 <i className="bi bi-briefcase-fill text-primary fs-2 mb-2"></i>
                                 <h6>Job Postings</h6>
                                 <p className="mb-2">Create new job listings</p>
-                                <button className="btn btn-sm btn-outline-primary">
+                                <button
+                                  className="btn btn-sm btn-outline-primary"
+                                  onClick={handleOpenJobModal}
+                                >
                                   Add Job
                                 </button>
                               </div>
@@ -1360,6 +1615,198 @@ export default function StaffDashboard() {
           )}
         </div>
       </main>
+
+      {/* Job Posting Modal */}
+      {showJobModal && (
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-lg">
+            <div
+              className="modal-content"
+              style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "0.5rem",
+              }}
+            >
+              <div className="modal-header">
+                <h5 className="modal-title">Add Job Posting</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCloseJobModal}
+                ></button>
+              </div>
+              <div className="modal-body">
+                {jobFormError && (
+                  <div className="alert alert-danger">{jobFormError}</div>
+                )}
+                <form onSubmit={handleJobSubmit}>
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Title</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="title"
+                        value={jobFormData.title}
+                        onChange={handleJobFormChange}
+                        required
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Company</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="company"
+                        value={jobFormData.company}
+                        onChange={handleJobFormChange}
+                        required
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Location</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="location"
+                        value={jobFormData.location}
+                        onChange={handleJobFormChange}
+                        required
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Salary</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="salary"
+                        value={jobFormData.salary}
+                        onChange={handleJobFormChange}
+                      />
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label">Description</label>
+                      <textarea
+                        className="form-control"
+                        name="description"
+                        value={jobFormData.description}
+                        onChange={handleJobFormChange}
+                        required
+                        rows={3}
+                      />
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label">Requirements</label>
+                      <textarea
+                        className="form-control"
+                        name="requirements"
+                        value={jobFormData.requirements}
+                        onChange={handleJobFormChange}
+                        rows={3}
+                      />
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label">Image</label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="modal-footer mt-3">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleCloseJobModal}
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={jobFormLoading}
+                    >
+                      {jobFormLoading ? "Submitting..." : "Submit"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notification Dialog */}
+      {showNotificationDialog && selectedNotification && (
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Notification Details</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowNotificationDialog(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>
+                  <strong>Type:</strong> {selectedNotification.type}
+                </p>
+                <p>
+                  <strong>Message:</strong> {selectedNotification.message}
+                </p>
+                <p>
+                  <strong>Time:</strong> {selectedNotification.time}
+                </p>
+                {selectedNotification.purpose && (
+                  <p>
+                    <strong>Purpose:</strong> {selectedNotification.purpose}
+                  </p>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowNotificationDialog(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Snackbar */}
+      {showSnackbar && (
+        <div
+          className="position-fixed bottom-0 end-0 p-3"
+          style={{ zIndex: 1050 }}
+        >
+          <div className="toast show" role="alert">
+            <div className="toast-body">
+              {snackbarMessage}
+              <button
+                type="button"
+                className="btn-close ms-2"
+                onClick={handleSnackbarClose}
+              ></button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
