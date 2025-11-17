@@ -1,13 +1,13 @@
 import { Routes, Route } from "react-router-dom";
-import LandingPage from "./landingpage";
-import SignUpPage from "./signuppage";
-import SignInPage from "./signinpage";
-import ForgotPasswordPage from "./ForgotPasswordPage";
-import UpdatePasswordPage from "./UpdatePasswordPage";
-import PaymentPage from "./paymentpage";
-import UserDashboard from "./userdashboard";
-import AdminDashboard from "./admindashboard";
-import StaffDashboard from "./staffdashboard";
+import LandingPage from "./other pages/landingpage";
+import SignUpPage from "./logins/signuppage";
+import SignInPage from "./logins/signinpage";
+import ForgotPasswordPage from "./other pages/ForgotPasswordPage";
+import UpdatePasswordPage from "./other pages/UpdatePasswordPage";
+import PaymentPage from "./other pages/paymentpage";
+import UserDashboard from "./actors pages/user/userdashboard";
+import AdminDashboard from "./actors pages/admin/admindashboard";
+import StaffDashboard from "./actors pages/staff/staffdashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import Root from "./Root";
 

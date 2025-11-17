@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "./supabaseClient";
+import { supabase } from "../supabaseClient";
 
 export default function SignInPage(): JSX.Element {
   const navigate = useNavigate();

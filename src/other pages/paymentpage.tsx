@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext";
-import { supabase } from "./supabaseClient";
+import { useAuth } from "../AuthContext";
+import { supabase } from "../supabaseClient";
 
 const plans = {
   monthly: {

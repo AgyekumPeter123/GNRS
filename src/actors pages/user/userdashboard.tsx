@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../../AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "./supabaseClient";
+import { supabase } from "../../supabaseClient";
 
 export default function UserDashboard() {
   const { user } = useAuth();
